@@ -24,34 +24,35 @@ body {
 		& ul {
 			background: #3b3b42;
 			border-radius: 5px;
-			padding: 5px;
+			padding: 0;
 
 			&:hover {
 				& > li.buttons {
 					display: block;
 				}
-				& > li.text {
-					padding-right: 70px;
-				}
 			}
 		}
 
 		& li {
-			display: inline;
 			list-style-type: none;
 
 			&.text {
 				margin: 0;
-				padding: 0;
+				padding: 5px 5px;
+				cursor: pointer;
 			}
 
 			&.buttons {
+				padding: 5px 5px;
+				text-align: center;
 				display: none;
-				float: right;
+				background: #e95785;
+				color: #26262d;
 				cursor: pointer;
+				border-radius: 0 0 5px 5px;
 				
 				& span {
-					padding: 0 1px;
+					padding: 0px 3px;
 				}
 			}
 		}

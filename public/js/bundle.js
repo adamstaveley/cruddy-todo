@@ -9777,19 +9777,20 @@ var noResult = _react2.default.createElement(
 	)
 );
 
-function Up() {
-	return _react2.default.createElement(
-		"span",
-		{ className: "up-button" },
-		_react2.default.createElement("span", { className: "glyphicon glyphicon-chevron-up", "aria-hidden": "true" })
-	);
-}
-
-function Down() {
+function Move(props) {
+	var arrow = "glyphicon glyphicon-chevron-" + props.arrow;
 	return _react2.default.createElement(
 		"span",
 		{ className: "down-button" },
-		_react2.default.createElement("span", { className: "glyphicon glyphicon-chevron-down", "aria-hidden": "true" })
+		_react2.default.createElement("span", { className: arrow, "aria-hidden": "true" })
+	);
+}
+
+function Edit() {
+	return _react2.default.createElement(
+		"span",
+		{ className: "trash-button" },
+		_react2.default.createElement("span", { className: "glyphicon glyphicon-pencil", "aria-hidden": "true" })
 	);
 }
 
@@ -9945,8 +9946,9 @@ var App = function (_React$Component2) {
 						_react2.default.createElement(
 							"li",
 							{ className: "buttons" },
-							_react2.default.createElement(Up, null),
-							_react2.default.createElement(Down, null),
+							_react2.default.createElement(Move, { arrow: "up" }),
+							_react2.default.createElement(Move, { arrow: "down" }),
+							_react2.default.createElement(Edit, null),
 							_react2.default.createElement(Trash, { id: entry.id, text: entry.text,
 								onClick: function onClick(id, text) {
 									return _this5.updateEntry('DELETE', id, text);

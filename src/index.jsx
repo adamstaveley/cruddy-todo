@@ -7,21 +7,24 @@ const noResult =  (
 	</div>
 );
 
-function Up() {
+
+function Move(props) {
+	const arrow = `glyphicon glyphicon-chevron-${props.arrow}`;
 	return (
-		<span className="up-button">
-			<span className="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+		<span className="down-button">
+			<span className={arrow} aria-hidden="true"></span>
 		</span>
 	);
 }
 
-function Down() {
-	return (
-		<span className="down-button">
-			<span className="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+function Edit() {
+	return (	
+		<span className="trash-button">
+			<span className="glyphicon glyphicon-pencil" aria-hidden="true"></span>
 		</span>
 	);
 }
+
 
 function Trash(props) {
 	return (
@@ -127,8 +130,9 @@ class App extends React.Component {
 						<ul className="entry" key={entry.id}>
 							<li className="text">{entry.text}</li>
 							<li className="buttons">
-								<Up />
-								<Down />
+								<Move arrow="up" />
+								<Move arrow="down" />
+								<Edit />
 								<Trash id={entry.id} text={entry.text} 
 									onClick={(id, text) => this.updateEntry('DELETE', id, text)} />
 							</li>

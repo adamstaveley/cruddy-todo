@@ -18,23 +18,25 @@ body {
     .todo-container .entries ul {
       background: #3b3b42;
       border-radius: 5px;
-      padding: 5px; }
+      padding: 0; }
       .todo-container .entries ul:hover > li.buttons {
         display: block; }
-      .todo-container .entries ul:hover > li.text {
-        padding-right: 70px; }
     .todo-container .entries li {
-      display: inline;
       list-style-type: none; }
       .todo-container .entries li.text {
         margin: 0;
-        padding: 0; }
-      .todo-container .entries li.buttons {
-        display: none;
-        float: right;
+        padding: 5px 5px;
         cursor: pointer; }
+      .todo-container .entries li.buttons {
+        padding: 5px 5px;
+        text-align: center;
+        display: none;
+        background: #e95785;
+        color: #26262d;
+        cursor: pointer;
+        border-radius: 0 0 5px 5px; }
         .todo-container .entries li.buttons span {
-          padding: 0 1px; }
+          padding: 0px 3px; }
   .todo-container .add {
     display: flex;
     flex-direction: row;

@@ -150,5 +150,8 @@ function deleteEntry(data, callback) {
 }
 
 
+// add pg functions to class
+
+
 // listen
 app.listen(port, host, () => console.log(`Listening on http://${host}:${port}`));
