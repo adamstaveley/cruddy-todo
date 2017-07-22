@@ -6,6 +6,8 @@ const app = express();
 const host = '0.0.0.0';
 const port = 8000;
 
+app.use(express.static('public'));
+
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/src/index.html');
 });
@@ -22,14 +24,16 @@ function createPool() {
 }
 
 function testTypes(data) {
-	return typeof data.id === 'number' && typeof data.entry === 'string';
+	return typeof data.id === 'number' && typeof data.text === 'string';
 }
 
 
 // CREATE
 app.post('/todo', (req, res) => {
-	// json parameters = id, entry
+	// json parameters = id, text
 	const data = req.body;
+	console.log('POST')
+	console.log(data);
 	if (testTypes(data)) {
 		verifyEntry(data, (status) => res.sendStatus(status));	
 	} else {
@@ -39,8 +43,8 @@ app.post('/todo', (req, res) => {
 
 function verifyEntry(data, callback) {
 	let query = {
-		text: 'SELECT * FROM entries WHERE id = $1 AND entry = $2',
-		values: [data.id, data.entry]
+		text: 'SELECT * FROM entries WHERE id = $1 AND text = $2',
+		values: [data.id, data.text]
 	}
 	const pool = createPool();
 	pool.query(query, (err, res) => {
@@ -50,7 +54,7 @@ function verifyEntry(data, callback) {
 }
 
 function addEntry(query, callback) {
-	query.text = 'INSERT INTO entries (id, entry) VALUES ($1, $2)';
+	query.text = 'INSERT INTO entries (id, text) VALUES ($1, $2)';
 	const pool = createPool();
 	pool.query(query.text, query.values, (err, res) => {
 		const status = err > 0 ? 500 : 200;
@@ -63,9 +67,12 @@ function addEntry(query, callback) {
 // READ
 app.get('/todo', (req, res) => {
 	// no parameters = fetches all entries
+	console.log('GET');
 	const pool = createPool();
 	pool.query('SELECT * FROM entries', (err, result) => {
-		result.rowCount > 0 ? res.send(result.rows) : res.sendStatus(404);
+		if (result) {
+			result.rowCount > 0 ? res.send(result.rows) : res.sendStatus(404);
+		}
 		pool.end();
 	});
 });
@@ -73,21 +80,21 @@ app.get('/todo', (req, res) => {
 
 //UPDATE
 app.put('/todo', (req, res) => {
-	// json parameters = id, entry, newEntry || idArray
+	// json parameters = id, text, newEntry || idArray
 	const data = req.body;
 	if (data.newEntry) {
 		modifyEntry(data, (status) => res.sendStatus(status));
 	} else if (data.idArray) {
 		shiftEntries(data, (status) => res.sendStatus(status));
 	} else {
-		res.status(400).send('TypeError: {id: number, entry: string} || {idArray: object}')
+		res.status(400).send('TypeError: {id: number, text: string} || {idArray: object}')
 	}
 });
 
 function modifyEntry(data, callback) {
 	const query = {
-		text: 'UPDATE entries SET entry = $1 WHERE id = $2 AND entry = $3',
-		values: [data.newEntry, data.id, data.entry]
+		text: 'UPDATE entries SET entry = $1 WHERE id = $2 AND text = $3',
+		values: [data.newEntry, data.id, data.text]
 	}
 	const pool = createPool();
 	pool.query(query, (err, res) => {
@@ -116,24 +123,28 @@ function shiftEntries(data, callback) {
 
 //DELETE
 app.delete('/todo', (req, res) => {
-	// json parameters = id, entry
+	// json parameters = id, text
 	const data = req.body;
+	console.log('DELETE')
+	console.log(data);
 	if (testTypes(data)) {
 		deleteEntry(data, (status) => res.sendStatus(status));
 	} else {
-		res.status(400).send('TypeError: form: {id: number, entry: string}');
+		res.status(400).send('TypeError: form: {id: number, text: string}');
 	}
 });
 
 function deleteEntry(data, callback) {
 	const query = {
-		text: 'DELETE FROM entries WHERE id = $1 AND entry = $2',
-		values: [data.id, data.entry]
+		text: 'DELETE FROM entries WHERE id = $1 AND text = $2',
+		values: [data.id, data.text]
 	}
 	console.log(query);
 	const pool = createPool();
 	pool.query(query, (err, res) => {
-		res.rowCount > 0 ? callback(200) : callback(404);
+		if (res) {
+			res.rowCount > 0 ? callback(200) : callback(404);
+		}
 		pool.end();
 	});
 }

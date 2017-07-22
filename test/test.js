@@ -9,7 +9,7 @@ const host = `http://${hostname}:${port}/todo`;
 // e.g. send delete request after creating random entry
 
 describe('CREATE', () => {
-	const data = {id: Math.floor(Math.random() * 32000), entry: 'hello world'}
+	const data = {id: Math.floor(Math.random() * 32000), text: 'hello world'}
 	it('new entry returns 200', (done) => {
 		request.post({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(200);
@@ -45,14 +45,14 @@ describe('READ', () => {
 describe('UPDATE', () => {
 
 	it('successful modify returns 200', (done) => {
-		const data = {id: 1, entry: 'hello world', newEntry: 'world hello'};
+		const data = {id: 1, text: 'hello world', newEntry: 'world hello'};
 		request.put({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(200);
 			done();
 		});
 	});
 	it('non-existent entry returns 404', (done) => {
-		const data = {id: 999, entry: 'Burns and Smithers sitting in a tree', newEntry: 'Burns baby Burns'};
+		const data = {id: 999, text: 'Burns and Smithers sitting in a tree', newEntry: 'Burns baby Burns'};
 		request.put({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(404);
 			done();
@@ -70,14 +70,14 @@ describe('UPDATE', () => {
 
 describe('DELETE', () => {
 	it('successful deletion returns 200', (done) => {
-		const data = {id: 1, entry: 'hello world'};
+		const data = {id: 1, text: 'hello world'};
 		request.delete({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(200);
 			done();
 		});
 	});
 	it('deleting non-existing entry returns 404', (done) => {
-		const data = {id: 9999, entry: 'Homer Simpson rides motorcycles'};
+		const data = {id: 9999, text: 'Homer Simpson rides motorcycles'};
 		request.delete({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(404);
 			done();

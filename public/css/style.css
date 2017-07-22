@@ -1,0 +1,59 @@
+body {
+  background-color: #26262d; }
+
+.todo-container {
+  margin: 0 auto;
+  padding: 20px;
+  height: 100vh;
+  width: 800px;
+  background-color: #26262d; }
+  @media (max-width: 800px) {
+    .todo-container {
+      width: 100vw; } }
+  .todo-container .entries {
+    font-size: 18px;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    color: #e95785; }
+    .todo-container .entries ul {
+      background: #3b3b42;
+      border-radius: 5px;
+      padding: 5px; }
+      .todo-container .entries ul:hover > li.buttons {
+        display: block; }
+      .todo-container .entries ul:hover > li.text {
+        padding-right: 70px; }
+    .todo-container .entries li {
+      display: inline;
+      list-style-type: none; }
+      .todo-container .entries li.text {
+        margin: 0;
+        padding: 0; }
+      .todo-container .entries li.buttons {
+        display: none;
+        float: right;
+        cursor: pointer; }
+        .todo-container .entries li.buttons span {
+          padding: 0 1px; }
+  .todo-container .add {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap; }
+    .todo-container .add .add-button {
+      width: 30px;
+      padding: 10px;
+      color: #e95785;
+      cursor: pointer; }
+    .todo-container .add .add-form {
+      width: 95%; }
+      .todo-container .add .add-form .add-form-input {
+        padding: 8px 0 10px 20px;
+        background: #26262d;
+        color: #e95785;
+        border: none;
+        font-size: 16px;
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 500;
+        width: 100%; }
+
+/*# sourceMappingURL=style.css.map */
