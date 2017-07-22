@@ -37,7 +37,7 @@ body {
         border-radius: 0 0 5px 5px; }
         .todo-container .entries li.buttons span {
           padding: 0px 3px; }
-          .todo-container .entries li.buttons span:hover {
+          .todo-container .entries li.buttons span .glyphicon:hover {
             color: #e4e4e4; }
   .todo-container .add {
     display: flex;

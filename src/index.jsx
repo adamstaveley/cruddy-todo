@@ -1,20 +1,33 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-const noResult =  (
-	<div className="entries">
-		<p>No entries found</p>
-	</div>
-);
+const url = 'http://localhost:8000/todo';
 
+class Move extends React.Component {
+	constructor(props) {
+		super(props);
+	}
 
-function Move(props) {
-	const arrow = `glyphicon glyphicon-chevron-${props.arrow}`;
-	return (
-		<span className="down-button">
-			<span className={arrow} aria-hidden="true"></span>
-		</span>
-	);
+	requestSwitch(direction) {
+		const id = this.props.data.id;
+		const text = this.props.data.text;
+		const target = direction === 'up' ? id - 1 : id + 1;
+		const data = {id: id, newId: target, text: text};
+		this.props.onClick(data);
+	}
+
+	render() {
+		return (
+			<span>
+				<span className="glyphicon glyphicon-chevron-up"
+					onClick={() => this.requestSwitch('up')}
+					aria-hidden="true"></span>
+				<span className="glyphicon glyphicon-chevron-down"
+					onClick={() => this.requestSwitch('down')}
+					aria-hidden="true"></span>
+			</span>
+		);
+	}
 }
 
 function Edit(props) {
@@ -27,7 +40,7 @@ function Edit(props) {
 
 
 function Trash(props) {
-	const data = {id: props.id, text: props.text};
+	const data = {id: props.data.id, text: props.data.text};
 	return (
 		<span className="trash-button" onClick={() => props.onClick(data)}>
 			<span className="glyphicon glyphicon-trash" aria-hidden="true"></span>
@@ -67,10 +80,10 @@ class AddForm extends React.Component {
 		return(
 			<form className="entry-form" onSubmit={this.submit}>
 				<input className="entry-form-input"
-					   placeholder="write new entry..."
-					   value={this.state.value}
-					   onChange={this.updateValue}
-					   autoFocus>
+					placeholder="write new entry..."
+					value={this.state.value}
+					onChange={this.updateValue}
+					autoFocus>
 				</input>
 			</form>
 		)
@@ -104,8 +117,8 @@ class ModifyForm extends React.Component {
 
 	submit(event) {
 		const data = {
-			id: this.props.id, 
-			text: this.props.text,
+			id: this.props.data.id, 
+			text: this.props.data.text,
 			newText: this.state.value
 		};
 		this.props.onSubmit(data);
@@ -116,9 +129,9 @@ class ModifyForm extends React.Component {
 		return (
 			<form className="entry-form" onSubmit={this.submit}>
 				<input className="entry-form-input"
-					   value={this.state.value}
-					   onChange={this.updateValue}
-					   autoFocus="true">
+					value={this.state.value}
+					onChange={this.updateValue}
+					autoFocus>
 				</input>
 			</form>
 		);
@@ -134,12 +147,14 @@ class App extends React.Component {
 
 	apiRequest(method, data, callback) {
 		const xhr = new XMLHttpRequest;
-		xhr.open(method, 'http://192.168.1.6:8000/todo', true);
+		xhr.open(method, url, true);
 		if (!(method === 'GET')) { 
 			xhr.setRequestHeader('Content-Type', 'application/json'); 
 		}
 		xhr.onreadystatechange = () => { 
 			if (xhr.readyState === 4 && xhr.status === 200) {
+				// console.log(xhr.status);
+				// console.log(xhr.responseText);
 				callback(xhr);
 			}
 		};
@@ -149,14 +164,14 @@ class App extends React.Component {
 
 	getEntries() {
 		this.apiRequest('GET', null, (xhr) => {
-			this.result = JSON.parse(xhr.responseText);
-			this.result.forEach((entry) => {
+			this.entries = JSON.parse(xhr.responseText);
+			this.entries.forEach((entry) => {
 				const openKey = `isOpen${entry.id}`;
 				const modifyKey = `modify${entry.id}`;
 				this.setState({[openKey]: false});
 				this.setState({[modifyKey]: false});
 			});
-			this.setState({numEntries: this.result.length});
+			this.setState({numEntries: this.entries.length});
 		});
 	}
 
@@ -172,12 +187,15 @@ class App extends React.Component {
 	}
 
 	shiftEntries(id) {
+		console.log(id);
 		const numAfter = this.state.numEntries - id;
 		if (numAfter > 0) {
 			let idArray = Array.from(Array(numAfter).keys());  // populate array of numAfter length
 			idArray = idArray.map(i => { return i + id + 1 }); // add id + 1 (given 0 index)
 			const data = {idArray: JSON.stringify(idArray)};
 			this.updateEntry('PUT', data);
+		} else {
+			this.getEntries();
 		}
 	}
 
@@ -194,13 +212,13 @@ class App extends React.Component {
 	renderEntry() {
 		return (
 			<div className="entries">
-				{this.result.map(entry => {
+				{this.entries.map(entry => {
 					const openKey = `isOpen${entry.id}`;
 					const modifyKey = `modify${entry.id}`;
 					return (
-						<ul className="entry" key={entry.id} id={entry.id}>
+						<ul className="entry" key={entry.id} data={entry}>
 							{this.state[modifyKey] ? 
-								<ModifyForm id={entry.id} text={entry.text} 
+								<ModifyForm data={entry}
 									onSubmit={(data) => this.updateEntry('PUT', data)}/> : 
 								<li className="text" id={entry.id} 
 									onClick={() => this.updateOpenState(entry.id)}>
@@ -217,11 +235,9 @@ class App extends React.Component {
 	renderButtons(entry) {
 		return (
 			<li className="buttons">
-				<Move arrow="up" />
-				<Move arrow="down" />
+				<Move arrow="down" data={entry} onClick={(data) => this.updateEntry('PUT', data)} />
 				<Edit onClick={() => this.modifyText(entry.id)}/>
-				<Trash id={entry.id} text={entry.text} 
-					   onClick={(data) => this.updateEntry('DELETE', data)} />
+				<Trash data={entry} onClick={(data) => this.updateEntry('DELETE', data)} />
 			</li>
 		)
 	}
@@ -231,12 +247,11 @@ class App extends React.Component {
 	}
 
 	render() {
-		const notEmpty = this.state.numEntries;
 		return (
 			<div className="todo-container">
-				{notEmpty ? this.renderEntry() : noResult}
+				{this.state.numEntries ? this.renderEntry() : <div/>}
 				<AddForm id={this.state.numEntries} 
-						 onSubmit={(data) => this.updateEntry('POST', data)}/>
+					onSubmit={(data) => this.updateEntry('POST', data)}/>
 			</div>
 		)
 	}
