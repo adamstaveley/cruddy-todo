@@ -15,6 +15,12 @@ body {
 		}
 	}
 
+	@media(max-width: 500px) {
+		& {
+			padding: 10px;
+		}
+	}
+
 	& .entries {
 		font-size: 18px;
 		font-family: 'Roboto Mono', monospace;
@@ -26,11 +32,11 @@ body {
 			border-radius: 5px;
 			padding: 0;
 
-			&:hover {
-				& > li.buttons {
-					display: block;
-				}
-			}
+			// &:hover {
+			// 	& > li.buttons {
+			// 		display: block;
+			// 	}
+			// }
 		}
 
 		& li {
@@ -45,7 +51,7 @@ body {
 			&.buttons {
 				padding: 5px 5px;
 				text-align: center;
-				display: none;
+				//display: none;
 				background: #e95785;
 				color: #26262d;
 				cursor: pointer;
@@ -53,6 +59,10 @@ body {
 				
 				& span {
 					padding: 0px 3px;
+
+					&:hover {
+						color: #e4e4e4;
+					}
 				}
 			}
 		}
@@ -62,27 +72,40 @@ body {
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
+		margin-bottom: 20px;
+
+		@media(max-width: 500px) {
+			& {
+				margin-bottom: 10px;
+			}
+		}
 
 		& .add-button {
-			width: 30px;
+			//width: 35px;
 			padding: 10px;
 			color: #e95785;
 			cursor: pointer;
-		}
 
-		& .add-form {
-			width: 95%;
-
-			& .add-form-input {
-				padding: 8px 0 10px 20px;
-				background: #26262d;
-				color: #e95785;
-				border: none;
-				font-size: 16px;
-				font-family: 'Roboto Mono', monospace;
-				font-weight: 500;
-				width: 100%;
+			&:hover {
+				color: #e4e4e4;
 			}
+		}
+	}
+
+	& form.entry-form {
+		width: 100%;
+
+		& input.entry-form-input {
+			padding: 5px 5px;
+			background: #26262d;
+			color: #e95785;
+			border: none;
+			font-size: 18px;
+			font-family: 'Roboto Mono', monospace;
+			font-weight: 500;
+			width: 100%;
+			background-color: #3b3b42;
+			border-radius: 5px;
 		}
 	}
 }

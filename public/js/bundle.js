@@ -9761,6 +9761,8 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -9786,35 +9788,38 @@ function Move(props) {
 	);
 }
 
-function Edit() {
+function Edit(props) {
 	return _react2.default.createElement(
 		"span",
-		{ className: "trash-button" },
+		{ className: "trash-button", onClick: function onClick() {
+				return props.onClick();
+			} },
 		_react2.default.createElement("span", { className: "glyphicon glyphicon-pencil", "aria-hidden": "true" })
 	);
 }
 
 function Trash(props) {
+	var data = { id: props.id, text: props.text };
 	return _react2.default.createElement(
 		"span",
 		{ className: "trash-button", onClick: function onClick() {
-				return props.onClick(props.id, props.text);
+				return props.onClick(data);
 			} },
 		_react2.default.createElement("span", { className: "glyphicon glyphicon-trash", "aria-hidden": "true" })
 	);
 }
 
-var Add = function (_React$Component) {
-	_inherits(Add, _React$Component);
+var AddForm = function (_React$Component) {
+	_inherits(AddForm, _React$Component);
 
-	function Add(props) {
-		_classCallCheck(this, Add);
+	function AddForm(props) {
+		_classCallCheck(this, AddForm);
 
-		var _this = _possibleConstructorReturn(this, (Add.__proto__ || Object.getPrototypeOf(Add)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (AddForm.__proto__ || Object.getPrototypeOf(AddForm)).call(this, props));
 
 		_this.state = {
 			isOpen: false,
-			text: ''
+			value: ''
 		};
 
 		_this.toggleOpen = _this.toggleOpen.bind(_this);
@@ -9823,7 +9828,7 @@ var Add = function (_React$Component) {
 		return _this;
 	}
 
-	_createClass(Add, [{
+	_createClass(AddForm, [{
 		key: "toggleOpen",
 		value: function toggleOpen() {
 			this.setState({ isOpen: !this.state.isOpen });
@@ -9831,13 +9836,14 @@ var Add = function (_React$Component) {
 	}, {
 		key: "updateValue",
 		value: function updateValue(event) {
-			this.setState({ text: event.target.value });
+			this.setState({ value: event.target.value });
 		}
 	}, {
 		key: "submit",
 		value: function submit(event) {
-			this.props.onSubmit(this.props.id + 1, this.state.text);
-			this.setState({ isOpen: false });
+			var data = { id: this.props.id + 1, text: this.state.value };
+			this.props.onSubmit(data);
+			this.setState({ value: '' });
 			event.preventDefault();
 		}
 	}, {
@@ -9845,49 +9851,99 @@ var Add = function (_React$Component) {
 		value: function renderForm() {
 			return _react2.default.createElement(
 				"form",
-				{ className: "add-form", onSubmit: this.submit },
-				_react2.default.createElement("input", { className: "add-form-input",
+				{ className: "entry-form", onSubmit: this.submit },
+				_react2.default.createElement("input", { className: "entry-form-input",
 					placeholder: "write new entry...",
 					value: this.state.value,
-					onChange: this.updateValue })
+					onChange: this.updateValue,
+					autoFocus: true })
 			);
 		}
 	}, {
 		key: "render",
 		value: function render() {
+			var symbol = this.state.isOpen ? 'minus' : 'plus';
+			var glyphicon = "glyphicon glyphicon-" + symbol;
 			return _react2.default.createElement(
 				"div",
 				{ className: "add" },
 				_react2.default.createElement(
 					"div",
 					{ className: "add-button", onClick: this.toggleOpen },
-					_react2.default.createElement("span", { className: "glyphicon glyphicon-plus", "aria-hidden": "true" })
+					_react2.default.createElement("span", { className: glyphicon, "aria-hidden": "true" })
 				),
 				this.state.isOpen ? this.renderForm() : _react2.default.createElement("div", null)
 			);
 		}
 	}]);
 
-	return Add;
+	return AddForm;
 }(_react2.default.Component);
 
-var App = function (_React$Component2) {
-	_inherits(App, _React$Component2);
+var ModifyForm = function (_React$Component2) {
+	_inherits(ModifyForm, _React$Component2);
+
+	function ModifyForm(props) {
+		_classCallCheck(this, ModifyForm);
+
+		var _this2 = _possibleConstructorReturn(this, (ModifyForm.__proto__ || Object.getPrototypeOf(ModifyForm)).call(this, props));
+
+		_this2.state = { value: _this2.props.text };
+		_this2.updateValue = _this2.updateValue.bind(_this2);
+		_this2.submit = _this2.submit.bind(_this2);
+		return _this2;
+	}
+
+	_createClass(ModifyForm, [{
+		key: "updateValue",
+		value: function updateValue(event) {
+			this.setState({ value: event.target.value });
+		}
+	}, {
+		key: "submit",
+		value: function submit(event) {
+			var data = {
+				id: this.props.id,
+				text: this.props.text,
+				newText: this.state.value
+			};
+			this.props.onSubmit(data);
+			event.preventDefault();
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			return _react2.default.createElement(
+				"form",
+				{ className: "entry-form", onSubmit: this.submit },
+				_react2.default.createElement("input", { className: "entry-form-input",
+					value: this.state.value,
+					onChange: this.updateValue,
+					autoFocus: "true" })
+			);
+		}
+	}]);
+
+	return ModifyForm;
+}(_react2.default.Component);
+
+var App = function (_React$Component3) {
+	_inherits(App, _React$Component3);
 
 	function App() {
 		_classCallCheck(this, App);
 
-		var _this2 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+		var _this3 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
-		_this2.state = { numEntries: 0 };
-		return _this2;
+		_this3.state = { numEntries: 0 };
+		return _this3;
 	}
 
 	_createClass(App, [{
 		key: "apiRequest",
 		value: function apiRequest(method, data, callback) {
 			var xhr = new XMLHttpRequest();
-			xhr.open(method, 'http://localhost:8000/todo', true);
+			xhr.open(method, 'http://192.168.1.6:8000/todo', true);
 			if (!(method === 'GET')) {
 				xhr.setRequestHeader('Content-Type', 'application/json');
 			}
@@ -9904,22 +9960,106 @@ var App = function (_React$Component2) {
 	}, {
 		key: "getEntries",
 		value: function getEntries() {
-			var _this3 = this;
+			var _this4 = this;
 
 			this.apiRequest('GET', null, function (xhr) {
-				_this3.result = JSON.parse(xhr.responseText);
-				_this3.setState({ numEntries: _this3.result.length });
+				_this4.result = JSON.parse(xhr.responseText);
+				_this4.result.forEach(function (entry) {
+					var openKey = "isOpen" + entry.id;
+					var modifyKey = "modify" + entry.id;
+					_this4.setState(_defineProperty({}, openKey, false));
+					_this4.setState(_defineProperty({}, modifyKey, false));
+				});
+				_this4.setState({ numEntries: _this4.result.length });
 			});
 		}
 	}, {
 		key: "updateEntry",
-		value: function updateEntry(method, id, text) {
-			var _this4 = this;
+		value: function updateEntry(method, data) {
+			var _this5 = this;
 
-			var data = JSON.stringify({ "id": id, "text": text });
+			data = JSON.stringify(data);
 			this.apiRequest(method, data, function () {
-				_this4.getEntries();
+				if (method === 'DELETE') {
+					_this5.shiftEntries(JSON.parse(data).id);
+				} else {
+					_this5.getEntries();
+				}
 			});
+		}
+	}, {
+		key: "shiftEntries",
+		value: function shiftEntries(id) {
+			var numAfter = this.state.numEntries - id;
+			if (numAfter > 0) {
+				var idArray = Array.from(Array(numAfter).keys()); // populate array of numAfter length
+				idArray = idArray.map(function (i) {
+					return i + id + 1;
+				}); // add id + 1 (given 0 index)
+				var data = { idArray: JSON.stringify(idArray) };
+				this.updateEntry('PUT', data);
+			}
+		}
+	}, {
+		key: "updateOpenState",
+		value: function updateOpenState(id) {
+			var key = "isOpen" + id;
+			this.setState(_defineProperty({}, key, !this.state[key]));
+		}
+	}, {
+		key: "modifyText",
+		value: function modifyText(id) {
+			var modifyKey = "modify" + id;
+			this.setState(_defineProperty({}, modifyKey, true));
+		}
+	}, {
+		key: "renderEntry",
+		value: function renderEntry() {
+			var _this6 = this;
+
+			return _react2.default.createElement(
+				"div",
+				{ className: "entries" },
+				this.result.map(function (entry) {
+					var openKey = "isOpen" + entry.id;
+					var modifyKey = "modify" + entry.id;
+					return _react2.default.createElement(
+						"ul",
+						{ className: "entry", key: entry.id, id: entry.id },
+						_this6.state[modifyKey] ? _react2.default.createElement(ModifyForm, { id: entry.id, text: entry.text,
+							onSubmit: function onSubmit(data) {
+								return _this6.updateEntry('PUT', data);
+							} }) : _react2.default.createElement(
+							"li",
+							{ className: "text", id: entry.id,
+								onClick: function onClick() {
+									return _this6.updateOpenState(entry.id);
+								} },
+							entry.text
+						),
+						_this6.state[openKey] ? _this6.renderButtons(entry) : _react2.default.createElement("li", null)
+					);
+				})
+			);
+		}
+	}, {
+		key: "renderButtons",
+		value: function renderButtons(entry) {
+			var _this7 = this;
+
+			return _react2.default.createElement(
+				"li",
+				{ className: "buttons" },
+				_react2.default.createElement(Move, { arrow: "up" }),
+				_react2.default.createElement(Move, { arrow: "down" }),
+				_react2.default.createElement(Edit, { onClick: function onClick() {
+						return _this7.modifyText(entry.id);
+					} }),
+				_react2.default.createElement(Trash, { id: entry.id, text: entry.text,
+					onClick: function onClick(data) {
+						return _this7.updateEntry('DELETE', data);
+					} })
+			);
 		}
 	}, {
 		key: "componentDidMount",
@@ -9927,50 +10067,18 @@ var App = function (_React$Component2) {
 			this.getEntries();
 		}
 	}, {
-		key: "renderEntry",
-		value: function renderEntry() {
-			var _this5 = this;
-
-			return _react2.default.createElement(
-				"div",
-				{ className: "entries" },
-				this.result.map(function (entry) {
-					return _react2.default.createElement(
-						"ul",
-						{ className: "entry", key: entry.id },
-						_react2.default.createElement(
-							"li",
-							{ className: "text" },
-							entry.text
-						),
-						_react2.default.createElement(
-							"li",
-							{ className: "buttons" },
-							_react2.default.createElement(Move, { arrow: "up" }),
-							_react2.default.createElement(Move, { arrow: "down" }),
-							_react2.default.createElement(Edit, null),
-							_react2.default.createElement(Trash, { id: entry.id, text: entry.text,
-								onClick: function onClick(id, text) {
-									return _this5.updateEntry('DELETE', id, text);
-								} })
-						)
-					);
-				})
-			);
-		}
-	}, {
 		key: "render",
 		value: function render() {
-			var _this6 = this;
+			var _this8 = this;
 
 			var notEmpty = this.state.numEntries;
 			return _react2.default.createElement(
 				"div",
 				{ className: "todo-container" },
 				notEmpty ? this.renderEntry() : noResult,
-				_react2.default.createElement(Add, { id: this.state.numEntries,
-					onSubmit: function onSubmit(id, text) {
-						return _this6.updateEntry('POST', id, text);
+				_react2.default.createElement(AddForm, { id: this.state.numEntries,
+					onSubmit: function onSubmit(data) {
+						return _this8.updateEntry('POST', data);
 					} })
 			);
 		}

@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 
 const app = express();
-const host = '0.0.0.0';
+const host = '192.168.1.6';
 const port = 8000;
 
 app.use(express.static('public'));
@@ -69,7 +69,7 @@ app.get('/todo', (req, res) => {
 	// no parameters = fetches all entries
 	console.log('GET');
 	const pool = createPool();
-	pool.query('SELECT * FROM entries', (err, result) => {
+	pool.query('SELECT * FROM entries ORDER BY id', (err, result) => {
 		if (result) {
 			result.rowCount > 0 ? res.send(result.rows) : res.sendStatus(404);
 		}
@@ -82,7 +82,9 @@ app.get('/todo', (req, res) => {
 app.put('/todo', (req, res) => {
 	// json parameters = id, text, newEntry || idArray
 	const data = req.body;
-	if (data.newEntry) {
+	console.log('PUT');
+	console.log(data);
+	if (data.newText) {
 		modifyEntry(data, (status) => res.sendStatus(status));
 	} else if (data.idArray) {
 		shiftEntries(data, (status) => res.sendStatus(status));
@@ -93,24 +95,27 @@ app.put('/todo', (req, res) => {
 
 function modifyEntry(data, callback) {
 	const query = {
-		text: 'UPDATE entries SET entry = $1 WHERE id = $2 AND text = $3',
-		values: [data.newEntry, data.id, data.text]
+		text: 'UPDATE entries SET text = $1 WHERE id = $2 AND text = $3',
+		values: [data.newText, data.id, data.text]
 	}
 	const pool = createPool();
 	pool.query(query, (err, res) => {
-		res.rowCount > 0 ? callback(200) : callback(404);
+		if (res) {
+			res.rowCount > 0 ? callback(200) : callback(404);
+		}
 		pool.end();
 	});
 }
 
 function shiftEntries(data, callback) {
+	// used after deletion
 	const idArray = JSON.parse(data.idArray);
 	const pool = createPool();
 	idArray.map((id) => {
 		// errors mapped to true in array - if error callback 500
 		const query = {
 			text: 'UPDATE entries SET id = $2 WHERE id = $1',
-			values: [id, id + 1]
+			values: [id, id - 1]
 		}
 		return pool.query(query, (err) => {
 			return err ? true : false; 
@@ -148,9 +153,6 @@ function deleteEntry(data, callback) {
 		pool.end();
 	});
 }
-
-
-// add pg functions to class
 
 
 // listen
