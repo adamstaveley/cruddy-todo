@@ -106,7 +106,7 @@ class AddForm extends React.Component {
 class ModifyForm extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {value: this.props.text};
+		this.state = {value: this.props.data.text};
 		this.updateValue = this.updateValue.bind(this);
 		this.submit = this.submit.bind(this);
 	}
@@ -153,9 +153,8 @@ class App extends React.Component {
 		}
 		xhr.onreadystatechange = () => { 
 			if (xhr.readyState === 4 && xhr.status === 200) {
-				// console.log(xhr.status);
-				// console.log(xhr.responseText);
-				callback(xhr);
+				console.log(xhr.status);
+				callback(xhr, method);
 			}
 		};
 		xhr.onerror = () => console.log(xhr.statusText);
@@ -163,6 +162,7 @@ class App extends React.Component {
 	}
 
 	getEntries() {
+		console.log('calling getEntries');
 		this.apiRequest('GET', null, (xhr) => {
 			this.entries = JSON.parse(xhr.responseText);
 			this.entries.forEach((entry) => {
@@ -172,12 +172,14 @@ class App extends React.Component {
 				this.setState({[modifyKey]: false});
 			});
 			this.setState({numEntries: this.entries.length});
+
 		});
+		console.log('numEntries: ' + this.state.numEntries);
 	}
 
 	updateEntry(method, data) {
 		data = JSON.stringify(data);
-		this.apiRequest(method, data, () => { 
+		this.apiRequest(method, data, (xhr, method) => { 
 			if (method === 'DELETE') {
 				this.shiftEntries(JSON.parse(data).id);
 			} else {
@@ -187,7 +189,6 @@ class App extends React.Component {
 	}
 
 	shiftEntries(id) {
-		console.log(id);
 		const numAfter = this.state.numEntries - id;
 		if (numAfter > 0) {
 			let idArray = Array.from(Array(numAfter).keys());  // populate array of numAfter length
@@ -247,6 +248,7 @@ class App extends React.Component {
 	}
 
 	render() {
+		console.log('rendering view');
 		return (
 			<div className="todo-container">
 				{this.state.numEntries ? this.renderEntry() : <div/>}

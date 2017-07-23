@@ -1,5 +1,10 @@
+$primary: 		#26262d;
+$primary-alt:	#3b3b42;
+$secondary: 	#3ae389;
+$highlight: 	#e4e4e4;
+
 body {
-	background-color: #26262d;
+	background-color: $primary;
 }
 
 .todo-container {
@@ -7,7 +12,7 @@ body {
 	padding: 20px;
 	height: 100vh;
 	width: 800px;
-	background-color: #26262d;
+	background-color: $primary;
 
 	@media(max-width: 800px) {
 		& {
@@ -25,10 +30,10 @@ body {
 		font-size: 18px;
 		font-family: 'Roboto Mono', monospace;
 		font-weight: 500;
-		color: #e95785;
+		color: $secondary;
 
 		& ul {
-			background: #3b3b42;
+			background: $primary-alt;
 			border-radius: 5px;
 			padding: 0;
 
@@ -44,7 +49,7 @@ body {
 
 			&.text {
 				margin: 0;
-				padding: 5px 5px;
+				padding: 5px 10px;
 				cursor: pointer;
 			}
 
@@ -52,8 +57,8 @@ body {
 				padding: 5px 5px;
 				text-align: center;
 				//display: none;
-				background: #e95785;
-				color: #26262d;
+				background: $secondary;
+				color: $primary;
 				cursor: pointer;
 				border-radius: 0 0 5px 5px;
 				
@@ -61,7 +66,7 @@ body {
 					padding: 0px 3px;
 
 					& .glyphicon:hover {
-						color: #e4e4e4;
+						color: $highlight;
 					}
 				}
 			}
@@ -83,11 +88,11 @@ body {
 		& .add-button {
 			//width: 35px;
 			padding: 10px;
-			color: #e95785;
+			color: $secondary;
 			cursor: pointer;
 
 			&:hover {
-				color: #e4e4e4;
+				color: $highlight;
 			}
 		}
 	}
@@ -96,15 +101,15 @@ body {
 		width: 100%;
 
 		& input.entry-form-input {
-			padding: 5px 5px;
-			background: #26262d;
-			color: #e95785;
+			padding: 5px 10px;
+			background: $primary;
+			color: $secondary;
 			border: none;
 			font-size: 18px;
 			font-family: 'Roboto Mono', monospace;
 			font-weight: 500;
 			width: 100%;
-			background-color: #3b3b42;
+			background-color: $primary-alt;
 			border-radius: 5px;
 		}
 	}

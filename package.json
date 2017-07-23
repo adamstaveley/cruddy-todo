@@ -14,7 +14,8 @@
     "todo",
     "crud",
     "express",
-    "postgres"
+    "postgres",
+    "react"
   ],
   "author": "Adam Staveley",
   "license": "MIT",

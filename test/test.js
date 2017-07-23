@@ -5,8 +5,7 @@ const hostname = '0.0.0.0';
 const port = 8000;
 const host = `http://${hostname}:${port}/todo`;
 
-//NOTE: Sections will conflict - run individually or call api dynamically in request callback
-// e.g. send delete request after creating random entry
+//TODO: write new tests - those below are outdated
 
 describe('CREATE', () => {
 	const data = {id: Math.floor(Math.random() * 32000), text: 'hello world'}

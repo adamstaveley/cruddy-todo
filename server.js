@@ -32,8 +32,7 @@ function testTypes(data) {
 app.post('/todo', (req, res) => {
 	// json parameters = id, text
 	const data = req.body;
-	console.log('POST')
-	console.log(data);
+	console.log('POST: ' + JSON.stringify(data));
 	if (testTypes(data)) {
 		verifyEntry(data, (status) => res.sendStatus(status));	
 	} else {
@@ -70,8 +69,11 @@ app.get('/todo', (req, res) => {
 	console.log('GET');
 	const pool = createPool();
 	pool.query('SELECT * FROM entries ORDER BY id', (err, result) => {
-		if (result) {
-			result.rowCount > 0 ? res.send(result.rows) : res.sendStatus(404);
+		if (err) {
+			console.log(err);
+			res.sendStatus(500);
+		} else {
+			res.send(result.rows);
 		}
 	});
 	pool.end();
@@ -82,8 +84,7 @@ app.get('/todo', (req, res) => {
 app.put('/todo', (req, res) => {
 	// json parameters = id, text, newText || idArray
 	const data = req.body;
-	console.log('PUT');
-	console.log(data);
+	console.log('PUT: ' + JSON.stringify(data));
 	const callback = (status) => res.sendStatus(status);
 	if (data.newText) {
 		modifyText(data, callback);
@@ -149,13 +150,24 @@ function shiftEntries(data, callback) {
 	// used after deletion
 	let idArray = JSON.parse(data.idArray);
 	const pool = createPool();
-	idArray.forEach((id) => {
+	idArray.forEach((id, index) => {
 		const query = {
 			text: 'UPDATE entries SET id = $2 WHERE id = $1',
 			values: [id, id - 1]
 		}
-		pool.query(query);
-		pool.on('error', () => callback(500));
+		if (index === idArray.length - 1) {
+			pool.query(query, (err, res) => {
+				if (err) {
+					console.log(err);
+					callback(500);				
+				} else {
+					res.rowCount > 0 ? callback(200) : callback(500);
+				}
+			});
+		} else {
+			pool.query(query);
+			pool.on('error', () => callback(500));
+		}
 	});
 	pool.end();
 }
@@ -165,8 +177,7 @@ function shiftEntries(data, callback) {
 app.delete('/todo', (req, res) => {
 	// json parameters = id, text
 	const data = req.body;
-	console.log('DELETE')
-	console.log(data);
+	console.log('DELETE: ' + JSON.stringify(data));
 	if (testTypes(data)) {
 		deleteEntry(data, (status) => res.sendStatus(status));
 	} else {
