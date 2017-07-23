@@ -18,7 +18,7 @@ body {
     font-family: 'Roboto Mono', monospace;
     font-weight: 500;
     color: #3ae389; }
-    .todo-container .entries ul {
+    .todo-container .entries ul.entry {
       background: #3b3b42;
       border-radius: 5px;
       padding: 0; }
@@ -27,14 +27,18 @@ body {
       .todo-container .entries li.text {
         margin: 0;
         padding: 5px 10px;
-        cursor: pointer; }
+        cursor: pointer;
+        animation-name: fadeIn;
+        animation-duration: 0.5s; }
       .todo-container .entries li.buttons {
         padding: 5px 5px;
         text-align: center;
         background: #3ae389;
         color: #26262d;
         cursor: pointer;
-        border-radius: 0 0 5px 5px; }
+        border-radius: 0 0 5px 5px;
+        animation-name: changeColour;
+        animation-duration: 1.5s; }
         .todo-container .entries li.buttons span {
           padding: 0px 3px; }
           .todo-container .entries li.buttons span .glyphicon:hover {
@@ -65,6 +69,24 @@ body {
       font-weight: 500;
       width: 100%;
       background-color: #3b3b42;
-      border-radius: 5px; }
+      border-radius: 5px;
+      animation-name: fadeIn, moveUp;
+      animation-duration: 0.5s; }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
+@keyframes changeColour {
+  from {
+    background-color: #3b3b42; }
+  to {
+    background-color: #3ae389; } }
+@keyframes moveUp {
+  from {
+    margin-top: 10px; }
+  to {
+    margin-top: 0; } }
 
 /*# sourceMappingURL=style.css.map */

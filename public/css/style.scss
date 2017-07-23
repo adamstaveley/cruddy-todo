@@ -3,9 +3,7 @@ $primary-alt:	#3b3b42;
 $secondary: 	#3ae389;
 $highlight: 	#e4e4e4;
 
-body {
-	background-color: $primary;
-}
+body { background-color: $primary; }
 
 .todo-container {
 	margin: 0 auto;
@@ -15,15 +13,11 @@ body {
 	background-color: $primary;
 
 	@media(max-width: 800px) {
-		& {
-			width: 100vw;
-		}
+		& { width: 100vw; }
 	}
 
 	@media(max-width: 500px) {
-		& {
-			padding: 10px;
-		}
+		& {	padding: 10px; }
 	}
 
 	& .entries {
@@ -32,16 +26,10 @@ body {
 		font-weight: 500;
 		color: $secondary;
 
-		& ul {
+		& ul.entry {
 			background: $primary-alt;
 			border-radius: 5px;
 			padding: 0;
-
-			// &:hover {
-			// 	& > li.buttons {
-			// 		display: block;
-			// 	}
-			// }
 		}
 
 		& li {
@@ -51,17 +39,20 @@ body {
 				margin: 0;
 				padding: 5px 10px;
 				cursor: pointer;
+				animation-name: fadeIn;
+				animation-duration: 0.5s;
 			}
 
 			&.buttons {
 				padding: 5px 5px;
 				text-align: center;
-				//display: none;
 				background: $secondary;
 				color: $primary;
 				cursor: pointer;
 				border-radius: 0 0 5px 5px;
-				
+				animation-name: changeColour;
+				animation-duration: 1.5s;
+
 				& span {
 					padding: 0px 3px;
 
@@ -80,20 +71,15 @@ body {
 		margin-bottom: 20px;
 
 		@media(max-width: 500px) {
-			& {
-				margin-bottom: 10px;
-			}
+			& { margin-bottom: 10px; }
 		}
 
 		& .add-button {
-			//width: 35px;
 			padding: 10px;
 			color: $secondary;
 			cursor: pointer;
 
-			&:hover {
-				color: $highlight;
-			}
+			&:hover { color: $highlight; }
 		}
 	}
 
@@ -111,7 +97,23 @@ body {
 			width: 100%;
 			background-color: $primary-alt;
 			border-radius: 5px;
+			animation-name: fadeIn, moveUp;
+			animation-duration: 0.5s;
 		}
 	}
 }
 
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes changeColour {
+	from { background-color: $primary-alt; }
+	to { background-color: $secondary; }
+}
+
+@keyframes moveUp {
+	from { margin-top: 10px; }
+	to { margin-top: 0; }
+}
