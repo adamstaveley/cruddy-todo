@@ -17,7 +17,7 @@ body {
     font-size: 18px;
     font-family: 'Roboto Mono', monospace;
     font-weight: 500;
-    color: #3ae389; }
+    color: #50cda1; }
     .todo-container .entries ul.entry {
       background: #3b3b42;
       border-radius: 5px;
@@ -33,7 +33,7 @@ body {
       .todo-container .entries li.buttons {
         padding: 5px 5px;
         text-align: center;
-        background: #3ae389;
+        background: #50cda1;
         color: #26262d;
         cursor: pointer;
         border-radius: 0 0 5px 5px;
@@ -53,7 +53,7 @@ body {
         margin-bottom: 10px; } }
     .todo-container .add .add-button {
       padding: 10px;
-      color: #3ae389;
+      color: #50cda1;
       cursor: pointer; }
       .todo-container .add .add-button:hover {
         color: #e4e4e4; }
@@ -62,7 +62,7 @@ body {
     .todo-container form.entry-form input.entry-form-input {
       padding: 5px 10px;
       background: #26262d;
-      color: #3ae389;
+      color: #50cda1;
       border: none;
       font-size: 18px;
       font-family: 'Roboto Mono', monospace;
@@ -82,7 +82,7 @@ body {
   from {
     background-color: #3b3b42; }
   to {
-    background-color: #3ae389; } }
+    background-color: #50cda1; } }
 @keyframes moveUp {
   from {
     margin-top: 10px; }

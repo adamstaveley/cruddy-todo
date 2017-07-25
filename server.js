@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const server = require('http').createServer();
+const WebSocket = require('ws');
 const { Pool } = require('pg');
 
 const app = express();
-const host = 'localhost';
+const host = '192.168.1.6';
 const port = 8000;
 
 app.use(express.static('public'));
@@ -203,5 +205,28 @@ function deleteEntry(data, callback) {
 }
 
 
-// listen
-app.listen(port, host, () => console.log(`Listening on http://${host}:${port}`));
+// WEBSOCKET
+const wss = new WebSocket.Server({
+	server: server,
+	path: '/echo'
+});
+
+wss.on('connection', (ws) => {
+	console.log('client connected');
+	ws.on('message', (msg) => {
+		console.log(msg);
+		wss.clients.forEach((client) => {
+			if (client !== ws && client.readyState === WebSocket.OPEN) {
+				client.send(msg);
+			}
+		});
+	});
+});
+
+
+// SERVER CONFIG
+server.on('request', app);
+
+server.listen(port, host, () => { 
+	console.log(`listening on http://${host}:${port}`)
+});

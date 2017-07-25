@@ -3,6 +3,8 @@
 Add, move, modify and delete todo entries across a local network. The client uses React 
 whilst the server queries a postgres database.
 
+The app also provides real-time updates between clients via a WebSocket. 
+
 ## Setup
 
 Postgres setup:
@@ -26,9 +28,7 @@ $ PGPASSWORD=$YOUR_PASSWORD npm start
 ```
 
 * Run setup.sh with an IP address parameter to configure the host IP. If don't wish for other 
-	devices to access the host, you can skip this step. If you wish to run setup more than once,
-	you will need to modify the setup file to search for the last IP address passed to it rather
-	than localhost. 
+	devices to access the host, you can skip this step.
 
 
 ### HTTP API at `/todo` endpoint

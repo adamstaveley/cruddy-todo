@@ -1,7 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-const url = 'http://localhost:8000/todo';
+const host = window.location.host;
+const todoRoute = `http://${host}/todo`;
+const echoRoute = `ws://${host}/echo`;
+console.log(echoRoute);
 
 class Move extends React.Component {
 	constructor(props) {
@@ -136,24 +139,26 @@ class ModifyForm extends React.Component {
 			</form>
 		);
 	}
-
 }
 
 class App extends React.Component {
 	constructor() {
 		super();
 		this.state = {numEntries: 0};
+
+		this.ws = new WebSocket(echoRoute);
+		this.ws.onmessage = () => this.getEntries();
+		this.ws.onerror = (err) => console.log(err);
 	}
 
 	apiRequest(method, data, callback) {
 		const xhr = new XMLHttpRequest;
-		xhr.open(method, url, true);
+		xhr.open(method, todoRoute, true);
 		if (!(method === 'GET')) { 
 			xhr.setRequestHeader('Content-Type', 'application/json'); 
 		}
 		xhr.onreadystatechange = () => { 
 			if (xhr.readyState === 4 && xhr.status === 200) {
-				console.log(xhr.status);
 				callback(xhr, method);
 			}
 		};
@@ -162,7 +167,6 @@ class App extends React.Component {
 	}
 
 	getEntries() {
-		console.log('calling getEntries');
 		this.apiRequest('GET', null, (xhr) => {
 			this.entries = JSON.parse(xhr.responseText);
 			this.entries.forEach((entry) => {
@@ -174,7 +178,6 @@ class App extends React.Component {
 			this.setState({numEntries: this.entries.length});
 
 		});
-		console.log('numEntries: ' + this.state.numEntries);
 	}
 
 	updateEntry(method, data) {
@@ -185,6 +188,7 @@ class App extends React.Component {
 			} else {
 				this.getEntries();
 			}
+			this.ws.send('UPDATE');
 		});
 	}
 
@@ -248,7 +252,6 @@ class App extends React.Component {
 	}
 
 	render() {
-		console.log('rendering view');
 		return (
 			<div className="todo-container">
 				{this.state.numEntries ? this.renderEntry() : <div/>}
