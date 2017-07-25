@@ -6,20 +6,29 @@ whilst the server queries a postgres database.
 ## Setup
 
 Postgres setup:
+
 ```
-CREATE DATABASE todo;
-CREATE TABLE entries (id smallint, text varchar);
+$ sudo -u postgres createuser -P $USER
+$ sudo -u postgres createdb -O $USER todo
+$ psql todo
+todo=> CREATE TABLE entries (id smallint, text varchar);
 ```
+
+To allow node-postgres to access the database, you will need to edit the authentication
+method from ident to md5 in your `pg_hba.conf` file (typically located in `/var/lib/pgsql/data/`). 
 
 Program setup and start:
 ```
 $ git clone https://github.com/ayuopy/cruddy-todo.git
 $ npm install --production
-$ npm start
+$ ./setup.sh $YOUR_HOST
+$ PGPASSWORD=$YOUR_PASSWORD npm start
 ```
 
-Note: to serve across the network, change line 6 in `server.js` from `'localhost'` to your 
-server's local IP. 
+* Run setup.sh with an IP address parameter to configure the host IP. If don't wish for other 
+	devices to access the host, you can skip this step. If you wish to run setup more than once,
+	you will need to modify the setup file to search for the last IP address passed to it rather
+	than localhost. 
 
 
 ### HTTP API at `/todo` endpoint

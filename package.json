@@ -34,9 +34,11 @@
     "babel-preset-react": "^6.24.1",
     "babel-register": "^6.24.1",
     "chai": "^4.1.0",
+    "eslint-plugin-react": "^7.1.0",
     "mocha": "^3.4.2",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-transition-group": "^2.2.0",
     "request": "^2.81.0",
     "webpack": "^3.3.0"
   }
