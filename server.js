@@ -5,7 +5,7 @@ const WebSocket = require('ws');
 const { Pool } = require('pg');
 
 const app = express();
-const host = '192.168.1.6';
+const host = 'localhost';
 const port = 8000;
 
 app.use(express.static('public'));
