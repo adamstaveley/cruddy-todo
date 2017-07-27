@@ -19,26 +19,26 @@ class Queries {
 	}
 
 	addEntry(data, callback) {
-		let query = {
-			text: 'INSERT INTO entries (id, text) VALUES ($1, $2)',
-			values: [data.id, data.text]
-		}
+		let query = { values: [data.id, data.text] };
 		this.checkForExistingEntry(query, (exists) => {
 			if (!exists) {
-				this.pool.query(query.text, query.values, (err, res) => {
+				query.text = 'INSERT INTO entries (id, text) VALUES ($1, $2) RETURNING id';
+				this.pool.query(query, (err, res) => {
 					if (!err) {
-						res.rows[0] === 'INSERT 0 1' ? callback(200) : callback(500);
+						res.rows[0].id === data.id ? callback(200) : callback(500);
 					} else {
 						console.log(err);
 						callback(500);
 					}
 				});
+			} else {
+				callback(409);
 			}
 		});
 	}
 
 	checkForExistingEntry(query, callback) {
-		query.text =  'SELECT * FROM entries WHERE id = $1 AND text = $2',
+		query.text = 'SELECT * FROM entries WHERE id = $1 AND text = $2';
 		this.pool.query(query, (err, res) => {
 			if (!err) {
 				callback(res.rowCount);
@@ -63,12 +63,12 @@ class Queries {
 
 	modifyText(data, callback) {
 		const query = {
-			text: 'UPDATE entries SET text = $1 WHERE id = $2 AND text = $3',
+			text: 'UPDATE entries SET text = $1 WHERE id = $2 AND text = $3 RETURNING text',
 			values: [data.newText, data.id, data.text]
 		}
 		this.pool.query(query, (err, res) => {
 			if (!err) {
-				res.rows[0] === 'UPDATE 1' ? callback(200) : callback(404);
+				res.rows[0].text === data.newText ? callback(200) : callback(500);
 			} else {
 				console.log(err);
 				callback(500);
@@ -78,20 +78,24 @@ class Queries {
 
 	modifyId(data, callback) {
 		this.getEntryById(data.newId, (targetText) => { 
-			const text = 'UPDATE entries SET id = $1 WHERE id = $2 AND text = $3';
+			const text = 'UPDATE entries SET id = $1 WHERE id = $2 AND text = $3 RETURNING id';
 			let queries = [
 				{text: text, values: [data.newId, data.id, data.text]},
 				{text: text, values: [data.id, data.newId, targetText]}
 			];
-			this.pool.query(queries[0]);
-			this.pool.query(queries[1], (err, res) => {
+			this.pool.query(queries[0], (err, res) => {
 				if (!err) {
-					res.rows[0] === 'UPDATE 1' ? callback(200) : callback(500);
-				} else {	
-					console.log(err);
-					callback(500);
-				} 
+					this.pool.query(queries[1], (err, res) => {
+						if (!err) {
+							res.rows[0].id === data.id ? callback(200) : callback(500);
+						} else {
+							console.log(err);
+							callback(500);
+						}
+					});
+				}
 			});
+			
 		});
 	}
 
@@ -110,13 +114,13 @@ class Queries {
 		let idArray = JSON.parse(data.idArray);
 		idArray.forEach((id, index) => {
 			const query = {
-				text: 'UPDATE entries SET id = $2 WHERE id = $1',
-				values: [id, id - 1]
+				text: 'UPDATE entries SET id = $1 WHERE id = $2 RETURNING id',
+				values: [id - 1, id]
 			}
 			if (index === idArray.length - 1) {
 				this.pool.query(query, (err, res) => {
 					if (!err) {
-						res.rows[0] === 'UPDATE 1' ? callback(200) : callback(500);
+						res.rows[0].id = id - 1 ? callback(200) : callback(500);
 					} else {						
 						console.log(err);
 						callback(500);				
@@ -131,12 +135,16 @@ class Queries {
 
 	deleteEntry(data, callback) {
 		const query = {
-			text: 'DELETE FROM entries WHERE id = $1 AND text = $2',
+			text: 'DELETE FROM entries WHERE id = $1 AND text = $2 RETURNING id',
 			values: [data.id, data.text]
 		}
 		this.pool.query(query, (err, res) => {
 			if (!err) {
-				res.rows[0] === 'DELETE 1' ? callback(200) : callback(404);
+				if (res.rowCount > 0) {
+					res.rows[0].id === data.id ? callback(200) : callback(500);
+				} else {
+					callback(404);
+				}
 			} else {				
 				console.log(err);
 				callback(500);

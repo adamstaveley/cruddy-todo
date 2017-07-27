@@ -1,14 +1,24 @@
 const expect = require('chai').expect;
 const request = require('request');
 
-const hostname = '0.0.0.0';
+const hostname = 'localhost';
 const port = 8000;
 const host = `http://${hostname}:${port}/todo`;
 
-//TODO: write new tests - those below are outdated
+function addTempTestData() {
+	const data = {id: 2, text: 'Hello'};
+	request.post({url: host, json: data});
+}
+
+function DeleteRemainingData() {
+	const data = {id: 1, text: 'world hello'};
+	request.delete({url: host, json: data});
+}
+
+addTempTestData();
 
 describe('CREATE', () => {
-	const data = {id: Math.floor(Math.random() * 32000), text: 'hello world'}
+	const data = {id: 1, text: 'hello world'}
 	it('new entry returns 200', (done) => {
 		request.post({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(200);
@@ -21,20 +31,13 @@ describe('CREATE', () => {
 			done();
 		});
 	});
-	it('invalid parameters return 400', (done) => {
-		data.id = '66';
-		request.post({url: host, json: data}, (err, resp, body) => {
-			expect(resp.statusCode).to.equal(400);
-			done();
-		});
-	});
 });
 
 
 describe('READ', () => {
 	it('successful query returns array', (done) => {
 		request.get(host, (err, resp, body) => {
-			expect(typeof JSON.parse(body)).to.equal('object');
+			expect(JSON.parse(body) instanceof Array).to.equal(true);
 			done();
 		});
 	});
@@ -42,36 +45,43 @@ describe('READ', () => {
 
 
 describe('UPDATE', () => {
-
-	it('successful modify returns 200', (done) => {
-		const data = {id: 1, text: 'hello world', newEntry: 'world hello'};
+	it('successful text modify returns 200', (done) => {
+		const data = {id: 1, text: 'hello world', newText: 'world hello'};
 		request.put({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(200);
 			done();
 		});
 	});
-	it('non-existent entry returns 404', (done) => {
-		const data = {id: 999, text: 'Burns and Smithers sitting in a tree', newEntry: 'Burns baby Burns'};
-		request.put({url: host, json: data}, (err, resp, body) => {
-			expect(resp.statusCode).to.equal(404);
+	it('sucessful id switch returns 200', (done) => {
+		const data = {id: 1, newId: 2, text: 'world hello'};
+		request.put({url:host, json: data}, (err, resp, body) => {
+			expect(resp.statusCode).to.equal(200);
 			done();
-		})
+		});
 	});
 	it('successful shift returns 200', (done) => {
-		const data = {idArray: "[3, 4, 5, 6, 7]"}
+		const data = {idArray: "[1, 2]"}
 		request.put({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(200);
 			done();
 		});
+	});
+	it('missing parameters returns 400', (done) => {
+		const data = {id: 999, text: 'Bonjour mon ami'};
+		request.put({url: host, json: data}, (err, resp, body) => {
+			expect(resp.statusCode).to.equal(400);
+			done();
+		})
 	});
 });
 
 
 describe('DELETE', () => {
 	it('successful deletion returns 200', (done) => {
-		const data = {id: 1, text: 'hello world'};
+		const data = {id: 0, text: 'Hello'};
 		request.delete({url: host, json: data}, (err, resp, body) => {
 			expect(resp.statusCode).to.equal(200);
+			DeleteRemainingData();
 			done();
 		});
 	});
@@ -83,4 +93,5 @@ describe('DELETE', () => {
 		});
 	});
 });
+
 
