@@ -4,3 +4,4 @@ npm-debug.log
 .eslintrc.json
 Dockerfile
 docker-compose.yaml
+server.old.js
